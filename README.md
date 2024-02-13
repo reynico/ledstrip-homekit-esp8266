@@ -1,6 +1,6 @@
 # RGB led strip control with Apple Home
 
-I am using a modified version of [igorantolic's ai-esp32-rotary-encoder](https://github.com/igorantolic/ai-esp32-rotary-encoder).
+I am using a modified version of [igorantolic's ai-esp32-rotary-encoder](https://github.com/igorantolic/ai-esp32-rotary-encoder) library.
 
 ## Rotary encoder behavior
 
