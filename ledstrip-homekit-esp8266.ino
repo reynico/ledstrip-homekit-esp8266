@@ -10,6 +10,10 @@ bool received_sat = false;
 bool received_hue = false;
 bool received_brightness = false;
 
+// For the 5050 Led Strip
+// INVERT_OUTPUT should be set as false
+bool INVERT_OUTPUT = false;
+
 // RGB Led Strip outputs
 int r_pin = 13;  // Wemos - D7
 int g_pin = 12;  // Wemos - D6
@@ -61,14 +65,20 @@ void setup() {
   rgb_colors[0] = 255;
   rgb_colors[1] = 255;
   rgb_colors[2] = 255;
-  analogWrite(r_pin, 255);
-  analogWrite(g_pin, 255);
-  analogWrite(b_pin, 255);
+  customAnalogWrite(r_pin, rgb_colors[0]);
+  customAnalogWrite(g_pin, rgb_colors[1]);
+  customAnalogWrite(b_pin, rgb_colors[2]);
 
   randomSeed(analogRead(0));
   my_homekit_setup();
 }
 
+void customAnalogWrite(int pin, int value) {
+  if (INVERT_OUTPUT) {
+    value = 255 - value;
+  }
+  analogWrite(pin, value);
+}
 
 void on_button_short_click() {
   if (rotary_mode == BRIGHTNESS_MODE) {
@@ -128,6 +138,10 @@ void rotary_loop() {
       received_sat = true;
 
       updateColor();
+    }
+    if (!is_on) {
+      is_on = true;
+      LOG_D("Rotary encoder moved while the lamp was off, turning on");
     }
   }
   handle_rotary_button();
@@ -254,14 +268,14 @@ void updateColor() {
     }
 
     LOG_D("Update color to rgb(%d, %d, %d)", rgb_colors[0], rgb_colors[1], rgb_colors[2]);
-    analogWrite(r_pin, 255 - rgb_colors[0]);
-    analogWrite(g_pin, 255 - rgb_colors[1]);
-    analogWrite(b_pin, 255 - rgb_colors[2]);
+    customAnalogWrite(r_pin, rgb_colors[0]);
+    customAnalogWrite(g_pin, rgb_colors[1]);
+    customAnalogWrite(b_pin, rgb_colors[2]);
   } else if (!is_on) {  // lamp - switch to off
     LOG_D("Lamp is powered off");
-    analogWrite(r_pin, 255 - 0);
-    analogWrite(g_pin, 255 - 0);
-    analogWrite(b_pin, 255 - 0);
+    customAnalogWrite(r_pin, 0);
+    customAnalogWrite(g_pin, 0);
+    customAnalogWrite(b_pin, 0);
   }
 }
 
